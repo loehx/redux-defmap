@@ -1,4 +1,6 @@
-# redux-defmap
+# redux-defmap 
+
+![Build State](https://travis-ci.org/loehx/redux-defmap.svg?branch=master) ![Codacy Badge](https://api.codacy.com/project/badge/Grade/e852550356cc4f6aa542bc72895a19f3)
 
 Bring structure to redux applications
 
