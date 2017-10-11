@@ -1,20 +1,19 @@
-import { createStore, compose, applyMiddleware, combineReducers } from 'redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux'
 
 function Store(reducers, initialState, enhancer, actions) {
-
     if (typeof enhancer === 'object' && enhancer.length) {
-        enhancer = applyMiddleware(...enhancer);
+        enhancer = applyMiddleware(...enhancer)
     }
 
     if (typeof reducers === 'object') {
-        reducers = combineReducers(reducers);
+        reducers = combineReducers(reducers)
     }
 
-    const store = createStore(reducers, initialState, enhancer);
+    const store = createStore(reducers, initialState, enhancer)
 
-    actions.$dispatch = store.dispatch;
+    actions.$dispatch = store.dispatch
 
-    return store;
+    return store
 }
 
-export default Store;
+export default Store

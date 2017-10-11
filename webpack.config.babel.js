@@ -1,5 +1,4 @@
 import webpack from 'webpack'
-import path from 'path'
 
 const { NODE_ENV } = process.env
 
@@ -10,7 +9,7 @@ const plugins = [
     })
 ]
 
-const filename = `index.js`
+const filename = 'index.js'
 
 NODE_ENV === 'production' && plugins.push(
     new webpack.optimize.UglifyJsPlugin({

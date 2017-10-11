@@ -5,5 +5,12 @@
     "browser": true,
     "mocha": true,
     "node": true
+  },
+  "rules": {
+      "indent": [2, 4],
+      "space-before-function-paren": 0,
+      "padded-blocks": 1,
+      "no-return-assign": 0,
+      "space-unary-ops": 0
   }
 }

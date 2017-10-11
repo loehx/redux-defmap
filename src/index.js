@@ -1,11 +1,11 @@
-import { combineReducers, compose as reduxCompose, applyMiddleware } from 'redux';
-import extractActions from './extractActions';
-import extractReducer from './extractReducer';
-import extractMiddleware from './extractMiddleware';
-import createStore from './store';
+import { combineReducers, compose as reduxCompose, applyMiddleware } from 'redux'
+import extractActions from './extractActions'
+import extractReducer from './extractReducer'
+import extractMiddleware from './extractMiddleware'
+import createStore from './store'
 
 // eslint-disable no-underscore-dangle
-const compose = (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || reduxCompose;
+const compose = (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || reduxCompose
 // eslint-enable
 
 export {
@@ -16,4 +16,4 @@ export {
     createStore,
     compose,
     applyMiddleware
-};
+}

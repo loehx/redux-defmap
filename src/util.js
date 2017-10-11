@@ -1,12 +1,12 @@
 export function ensureSubState(state, stateKey) {
     if (!stateKey) {
-        return state;
+        return state
     }
 
-    const subState = state[stateKey];
-    if (subState) {
-        return subState;
+    let subState = state[stateKey]
+    if (!subState) {
+        subState = state[stateKey] = {}
     }
 
-    return state[stateKey] = {};
+    return subState
 }

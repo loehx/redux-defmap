@@ -1,4 +1,4 @@
-# redux-defmap 
+# redux-defmap
 
 [![Build State](https://travis-ci.org/loehx/redux-defmap.svg?branch=master)](https://travis-ci.org/loehx/redux-defmap) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e852550356cc4f6aa542bc72895a19f3)](https://www.codacy.com/app/alexander.loehn/redux-defmap?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=loehx/redux-defmap&amp;utm_campaign=Badge_Grade)
 
@@ -40,7 +40,7 @@ export default {
         $reduce: (state, payload) => ({
             ...state,
             sidebarContent: replaceAssetUrls(payload.data)
-        })
+        // })
     },
 }
 ```

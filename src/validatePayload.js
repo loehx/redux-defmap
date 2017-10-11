@@ -1,11 +1,11 @@
 export default function validatePayload(validation, name, payload) {
     if (typeof validation === 'function') {
         if (!validation(payload)) {
-            return console.error('[BODY_VALIDATION_FAILED] ', definition, payload);
+            return console.error('[BODY_VALIDATION_FAILED] ', name, payload)
         }
     } else /* typeof $validation === 'object' */ {
         if (typeof payload !== 'object') {
-            return console.error('[MISSING_BODY] Action: ' + name, validation, payload);
+            return console.error('[MISSING_BODY] Action: ' + name, validation, payload)
         }
 
         const errors = Object.keys(validation)
@@ -14,17 +14,17 @@ export default function validatePayload(validation, name, payload) {
                 value: payload[k],
                 $valid: validation[k](payload[k])
             }))
-            .filter(a => !a.$valid);
+            .filter(a => !a.$valid)
 
         if (errors.length) {
-            console.error('[ACTION_VALIDATION] Failed for ' + errors.length + ' prop(s) in action: ' + name, errors, definition);
+            console.error('[ACTION_VALIDATION] Failed for ' + errors.length + ' prop(s) in action: ' + name, errors)
 
-            const missingPayload = {};
+            const missingPayload = {}
             errors.forEach(e => {
-                missingPayload[e.key] = typeof e.value === 'undefined' ? 'undefined' : e.value;
-            });
-            console.log(JSON.stringify(missingPayload, null, 4));
-            console.log(JSON.stringify(payload, null, 4));
+                missingPayload[e.key] = typeof e.value === 'undefined' ? 'undefined' : e.value
+            })
+            console.log(JSON.stringify(missingPayload, null, 4))
+            console.log(JSON.stringify(payload, null, 4))
         }
     }
 }
