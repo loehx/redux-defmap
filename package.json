@@ -1,13 +1,11 @@
 {
   "name": "redux-defmap",
-  "version": "1.0.0",
-  "description": "Bring structure to your redux actions and reducers",
-  "main": "lib/index.js",
-  "typings": "typings.d.ts",
-  "jspm": {
-    "main": "src/index.js",
-    "format": "esm"
-  },
+  "version": "1.0.3",
+  "description": "Bring structure to your redux application",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "prebuild": "npm run clean",
     "build": "npm-run-all --parallel build:*",
@@ -17,7 +15,7 @@
     "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack",
     "clean": "./node_modules/.bin/rimraf lib dist es",
     "lint": "./node_modules/.bin/eslint webpack.config.babel.js src test",
-    "prepublish": "npm run lint && npm run test && npm run clean && npm run build",
+    "prepublish": "npm run test && npm run clean && npm run build",
     "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --compilers js:babel-core/register",
     "test:bail": "npm run test:watch -- --bail",
     "test:cov": "./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover --root src/ ./node_modules/.bin/_mocha",
