@@ -1,7 +1,19 @@
-import { combineReducers } from 'redux';
+import { combineReducers, compose as reduxCompose, applyMiddleware } from 'redux';
 import extractActions from './extractActions';
 import extractReducer from './extractReducer';
 import extractMiddleware from './extractMiddleware';
 import createStore from './store';
 
-export { extractActions, extractReducer, extractMiddleware, combineReducers, createStore };
+// eslint-disable no-underscore-dangle
+const compose = (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || reduxCompose;
+// eslint-enable
+
+export {
+    extractActions,
+    extractReducer,
+    extractMiddleware,
+    combineReducers,
+    createStore,
+    compose,
+    applyMiddleware
+};

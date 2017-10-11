@@ -1,5 +1,5 @@
 import { expect, assert } from 'chai'
-import { extractActions, extractMiddleware, extractReducer, createStore } from '../src'
+import { extractActions, extractMiddleware, extractReducer, createStore, applyMiddleware } from '../src'
 
 testExtractActions()
 
@@ -35,7 +35,7 @@ function testExtractActions() {
         const initialState = { app: { test: 0 } };
         const store = createStore({
             app: reducer
-        }, initialState, middleware, actions);
+        }, initialState, applyMiddleware(middleware), actions);
 
         it('should have created a middleware', () => {
             assert.typeOf(middleware, 'function');

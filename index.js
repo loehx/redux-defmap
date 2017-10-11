@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
 	else if(typeof exports === 'object')
-		exports["ReduxUndo"] = factory();
+		exports["ReduxDefMap"] = factory();
 	else
-		root["ReduxUndo"] = factory();
+		root["ReduxDefMap"] = factory();
 })(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -631,9 +631,9 @@ module.exports = g;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
-exports.createStore = exports.combineReducers = exports.extractMiddleware = exports.extractReducer = exports.extractActions = undefined;
+exports.applyMiddleware = exports.compose = exports.createStore = exports.combineReducers = exports.extractMiddleware = exports.extractReducer = exports.extractActions = undefined;
 
 var _redux = __webpack_require__(0);
 
@@ -655,11 +655,17 @@ var _store2 = _interopRequireDefault(_store);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// eslint-disable no-underscore-dangle
+var compose = typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || _redux.compose;
+// eslint-enable
+
 exports.extractActions = _extractActions2.default;
 exports.extractReducer = _extractReducer2.default;
 exports.extractMiddleware = _extractMiddleware2.default;
 exports.combineReducers = _redux.combineReducers;
 exports.createStore = _store2.default;
+exports.compose = compose;
+exports.applyMiddleware = _redux.applyMiddleware;
 
 /***/ }),
 /* 10 */
@@ -893,27 +899,17 @@ var _redux = __webpack_require__(0);
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-// eslint-disable no-underscore-dangle
-var composeEnhancers = typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || _redux.compose;
-// eslint-enable
+function Store(reducers, initialState, enhancer, actions) {
 
-function Store(reducers, initialState, middleware, actions) {
-
-    if ((typeof middleware === 'undefined' ? 'undefined' : _typeof(middleware)) === 'object' && middleware.length) {
-        middleware = _redux.applyMiddleware.apply(undefined, _toConsumableArray(middleware));
-    } else if (typeof middleware === 'function') {
-        middleware = (0, _redux.applyMiddleware)(middleware);
-    }
-
-    if (middleware) {
-        middleware = composeEnhancers(middleware);
+    if ((typeof enhancer === 'undefined' ? 'undefined' : _typeof(enhancer)) === 'object' && enhancer.length) {
+        enhancer = _redux.applyMiddleware.apply(undefined, _toConsumableArray(enhancer));
     }
 
     if ((typeof reducers === 'undefined' ? 'undefined' : _typeof(reducers)) === 'object') {
         reducers = (0, _redux.combineReducers)(reducers);
     }
 
-    var store = (0, _redux.createStore)(reducers, initialState, middleware);
+    var store = (0, _redux.createStore)(reducers, initialState, enhancer);
 
     actions.$dispatch = store.dispatch;
 

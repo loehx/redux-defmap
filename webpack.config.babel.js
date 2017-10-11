@@ -38,7 +38,7 @@ export default {
     output: {
         path: __dirname,
         filename,
-        library: 'ReduxUndo',
+        library: 'ReduxDefMap',
         libraryTarget: 'umd'
     },
 
