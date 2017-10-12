@@ -93,7 +93,7 @@ export default {
         actionCreator2: (arg) => { arg }, // actionCreator2('hello') => { type: 'ACTION_NAME', payload: { arg: 'hello' } },
         actionCreator3: (arg1, arg2) => arg1 + arg2, // actionCreator3(1, 1) => { type: 'ACTION_NAME', payload: 2 },
         actionCreator4: () => null, // dispatches { type: 'ACTION_NAME' },
-        actionCreator4: () => undefined, // dispatches NOTHING,
+        actionCreator5: () => undefined, // dispatches NOTHING,
 
         // OPTIONAL meta information
         // { type: 'ACTION_NAME', payload: { ... }, meta: { someProperty: 'ANY' } },

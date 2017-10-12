@@ -32,7 +32,7 @@ function testExtractActions() {
             let dispatched = null
             const actions = extractActions(sample, (a) => {
                 assert.ok(a)
-                dispatched = a /* ?*/
+                dispatched = a
             })
 
             actions.test('test payload #1')
@@ -103,10 +103,10 @@ function testExtractActions() {
             assert.typeOf(actions.inc, 'function')
             assert.typeOf(actions.dec, 'function')
 
-            let action = actions.inc(1) /* ?*/
+            let action = actions.inc(1)
             assert.deepEqual(action, { type: 'TEST', payload: 2 })
 
-            action = actions.dec(1) /* ?*/
+            action = actions.dec(1)
             assert.deepEqual(action, { type: 'TEST', payload: 0 })
         })
     })
@@ -122,14 +122,14 @@ function testExtractActions() {
         it('should return action without payload if returned null', () => {
             const actions = extractActions(sample)
 
-            let action = actions.returnNull() /* ?*/
+            let action = actions.returnNull()
             assert.notOk('payload' in action)
         })
 
         it('should not dispatch an action if payload is undefined', () => {
             const actions = extractActions(sample)
 
-            let action = actions.returnUndefined() /* ?*/
+            let action = actions.returnUndefined()
             assert.equal(action, null)
         })
     })
