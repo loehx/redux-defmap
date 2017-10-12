@@ -4,9 +4,9 @@ export default function validatePayload(validation, name, payload) {
             throw Error('[DEFMAP] Payload validation failed for action: ' + name, payload)
         }
     } else /* typeof $validation === 'object' */ {
-        // if (typeof payload !== 'object') {
-        //     return console.error('[DEFMAP] Missing payload in action: ' + name, validation, payload)
-        // }
+        if (typeof payload !== 'object') {
+            return console.error('[DEFMAP] Missing payload in action: ' + name, validation, payload)
+        }
 
         const errors = Object.keys(validation)
             .map(k => ({
