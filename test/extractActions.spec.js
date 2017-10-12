@@ -110,4 +110,27 @@ function testExtractActions() {
             assert.deepEqual(action, { type: 'TEST', payload: 0 })
         })
     })
+
+    describe('Dispatching specials', () => {
+        const sample = {
+            TEST: {
+                returnNull: () => null,
+                returnUndefined: () => undefined
+            }
+        }
+
+        it('should return action without payload if returned null', () => {
+            const actions = extractActions(sample)
+
+            let action = actions.returnNull() /* ?*/
+            assert.notOk('payload' in action)
+        })
+
+        it('should not dispatch an action if payload is undefined', () => {
+            const actions = extractActions(sample)
+
+            let action = actions.returnUndefined() /* ?*/
+            assert.equal(action, null)
+        })
+    })
 }

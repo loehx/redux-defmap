@@ -1,6 +1,6 @@
 {
   "name": "redux-defmap",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Bring structure to your redux application",
   "main": "index.js",
   "files": [

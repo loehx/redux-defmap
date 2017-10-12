@@ -15,7 +15,7 @@ function extractMiddleware(definitionMap, context, stateKey) {
     }
 
     if (Object.keys(filteredDefinitionMap).length === 0) {
-        console.warn('[NO EVENTS] No events found for creating a middleware.', definitionMap)
+        console.warn('[DEFMAP] No events found for creating a middleware.', definitionMap)
     }
 
     const func = store => next => action => {

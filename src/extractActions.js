@@ -44,21 +44,30 @@ function getActionCaller(name, definition, actions, getPayload) {
     const { $meta } = definition
 
     if (name !== name.toUpperCase()) {
-        console.error('[FORMAT_ERROR] Action names should be CAPITAL LETTERS ONLY:', JSON.stringify(name))
+        console.error('[DEFMAP] Action names should be UPPER CASE:', JSON.stringify(name))
     }
     if (getPayload && typeof getPayload !== 'function') {
-        console.error('[FORMAT_ERROR] Payload getter should be a function:', JSON.stringify(definition))
+        console.error('[DEFMAP] Payload getter should be a function:', JSON.stringify(definition))
     }
 
     if (!getPayload) {
-        getPayload = args => args
+        getPayload = args => args || null
     }
 
     return function(...args) {
-        const action = {
-            type: name,
-            payload: getPayload(...args)
+        const payload = getPayload(...args)
+        if (payload === undefined) {
+            return null
         }
+
+        const action = {
+            type: name
+        }
+
+        if (payload !== null) {
+            action.payload = payload
+        }
+
         if ($meta) {
             action.meta = $meta
         }
