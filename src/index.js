@@ -1,7 +1,8 @@
-import { combineReducers, compose as reduxCompose, applyMiddleware } from 'redux'
+import { combineReducers, compose as reduxCompose, applyMiddleware, connect } from 'redux'
 import extractActions from './extractActions'
 import extractReducer from './extractReducer'
 import extractMiddleware from './extractMiddleware'
+import extractStore from './extractStore'
 import createStore from './store'
 
 // eslint-disable no-underscore-dangle
@@ -14,6 +15,8 @@ export {
     extractMiddleware,
     combineReducers,
     createStore,
+    extractStore,
     compose,
-    applyMiddleware
+    applyMiddleware,
+    connect
 }

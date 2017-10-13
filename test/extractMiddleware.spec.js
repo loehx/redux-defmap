@@ -1,10 +1,42 @@
 import { assert } from 'chai'
 import { extractActions, extractMiddleware, extractReducer, createStore, applyMiddleware } from '../src'
 
-testExtractActions()
+describe('extractMiddleware', () => {
+    test()
+})
 
-function testExtractActions() {
+function test() {
     describe('Middleware Extraction', () => {
+        it('should extract a middleware ($before)', () => {
+            const sample = {
+                TEST: {
+                    $before: () => void(0)
+                }
+            }
+            const middleware = extractMiddleware(sample)
+            assert.typeOf(middleware, 'function')
+        })
+
+        it('should extract a middleware ($after)', () => {
+            const sample = {
+                TEST: {
+                    $after: () => void(0)
+                }
+            }
+            const middleware = extractMiddleware(sample)
+            assert.typeOf(middleware, 'function')
+        })
+
+        it('should not extract any middleware', () => {
+            const sample = {
+                TEST: {}
+            }
+            const middleware = extractMiddleware(sample)
+            assert.equal(middleware, null)
+        })
+    })
+
+    describe('Middleware Extraction (with store)', () => {
         let $before = () => void(0)
         let $after = () => void(0)
 

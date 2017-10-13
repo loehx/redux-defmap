@@ -6,4 +6,4 @@ coverage
 dist
 es
 _book
-index.js
+/index.js

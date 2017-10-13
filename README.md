@@ -19,6 +19,8 @@ npm install --save redux-defmap
 
 ## createStore
 
+Create your store redux-like.
+
 `store.js`
 ```js
 import actions from './actions'
@@ -76,6 +78,65 @@ export default {
             errorMessage: payload
         })
     }
+```
+## extractStore
+
+Create your store defmap-like.
+
+```js
+const store = extractStore({
+    app: {
+        // feature #1: Initial State
+        $state: {
+            count: 0
+        }
+
+        TEST: {
+            test: a => ({ count: 1 }),
+
+            $before: ...,
+            $after: ...,
+
+            $reduce: (state, payload) => ({
+                ...state,
+                count: payload.count
+            })
+        }
+    },
+    extra: {
+        $state: { test: 1 },
+
+        // feature #2: Extra Middleware
+        $middleware: someMiddleware, // store => next => action => { ... }
+
+        // feature #3: Extra Reducer
+        $reducer: someReducer, //  // (state, action) => { ... }
+    }
+})
+```
+
+State before calling `store.actions.test()`
+```
+{
+    app: {
+        count: 0
+    },
+    extra: {
+        test: 1
+    }
+}
+```
+
+State after calling `store.actions.test()`
+```
+{
+    app: {
+        count: 1
+    },
+    extra: {
+        test: 1
+    }
+}
 ```
 
 ## extractActions

@@ -1,9 +1,11 @@
 import { assert } from 'chai'
 import { extractActions } from '../src'
 
-testExtractActions()
+describe('extractActions', () => {
+    test()
+})
 
-function testExtractActions() {
+function test() {
     describe('Extract Actions Using $actionName', () => {
         const sample = {
             TEST: {
@@ -55,7 +57,7 @@ function testExtractActions() {
             const actions = extractActions(sample, () => void(0))
             assert.typeOf(actions, 'object')
             assert.typeOf(actions.typeof, 'function')
-            assert.equal(Object.keys(actions).length, 2 + 1)
+            assert.equal(Object.keys(actions).length, 2)
         })
 
         it('should dispatch a single action', () => {

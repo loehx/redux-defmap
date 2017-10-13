@@ -11,7 +11,11 @@ function Store(reducers, initialState, enhancer, actions) {
 
     const store = createStore(reducers, initialState, enhancer)
 
-    actions.$dispatch = store.dispatch
+    for (let k in actions) {
+        if (actions[k].definition) {
+            actions[k].definition.$dispatch = store.dispatch
+        }
+    }
 
     return store
 }

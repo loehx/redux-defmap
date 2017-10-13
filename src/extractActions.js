@@ -1,6 +1,5 @@
 export default function extractActions(definitionMap, dispatch) {
     const actions = {}
-    const start = new Date()
 
     for (let k in definitionMap) {
         const definition = definitionMap[k]
@@ -12,29 +11,24 @@ export default function extractActions(definitionMap, dispatch) {
             continue
         }
 
+        if (dispatch) {
+            definition.$dispatch = dispatch
+        }
+
         actionNames.forEach(actionName => {
             if (actions[actionName]) {
-                console.warn('[DEFMAP] Duplicate action key: ' + actionName)
+                throw new Error('[DEFMAP] Duplicate action key: ' + actionName)
             }
 
             const getPayload = definition[actionName] || definition.$getPayload
             actions[actionName] = getActionCaller(k, definition, actions, getPayload)
             actions[actionName].definition = definition
         })
-
-        if (dispatch) {
-            actions.$dispatch = dispatch
-        }
     }
 
     // Warn user if there were no actions found
-    const count = Object.keys(actions).length - 1
-    if (count === 0) { console.error('[DEFMAP] No actions extracted from object.', JSON.stringify(definitionMap)) }
-
-    // Warn user if creation took more than 20 ms
-    const took = new Date() - start
-    if (took > 20) {
-        console.warn(`[DEFMAP] Created ${count} actions in ${took} ms`)
+    if (!Object.keys(actions).length) {
+        return null
     }
 
     return actions
@@ -44,10 +38,10 @@ function getActionCaller(name, definition, actions, getPayload) {
     const { $meta } = definition
 
     if (name !== name.toUpperCase()) {
-        console.error('[DEFMAP] Action names should be UPPER CASE:', JSON.stringify(name))
+        throw new Error('[DEFMAP] Action names should be UPPER CASE:', JSON.stringify(name))
     }
     if (getPayload && typeof getPayload !== 'function') {
-        console.error('[DEFMAP] Payload getter should be a function:', JSON.stringify(definition))
+        throw new Error('[DEFMAP] Payload getter should be a function:', JSON.stringify(definition))
     }
 
     if (!getPayload) {
@@ -74,8 +68,8 @@ function getActionCaller(name, definition, actions, getPayload) {
 
         Object.freeze(action)
 
-        if (actions.$dispatch) {
-            actions.$dispatch(action)
+        if (definition.$dispatch) {
+            definition.$dispatch(action)
         }
 
         return action
