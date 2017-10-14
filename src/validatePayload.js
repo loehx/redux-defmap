@@ -1,11 +1,11 @@
 export default function validatePayload(validation, name, payload) {
     if (typeof validation === 'function') {
         if (!validation(payload)) {
-            throw Error('[DEFMAP] Payload validation failed for action: ' + name, payload)
+            throw Error('[REDUX-JEDI] Payload validation failed for action: ' + name, payload)
         }
     } else /* typeof $validation === 'object' */ {
         if (typeof payload !== 'object') {
-            return console.error('[DEFMAP] Missing payload in action: ' + name, validation, payload)
+            return console.error('[REDUX-JEDI] Missing payload in action: ' + name, validation, payload)
         }
 
         const errors = Object.keys(validation)
@@ -17,7 +17,7 @@ export default function validatePayload(validation, name, payload) {
             .filter(a => !a.$valid)
 
         if (errors.length) {
-            const error = new Error('[DEFMAP] Payload validation failed for ' + errors.length + ' prop(s) in action: ' + name, errors)
+            const error = new Error('[REDUX-JEDI] Payload validation failed for ' + errors.length + ' prop(s) in action: ' + name, errors)
 
             error.validation = {}
             errors.forEach(e => {

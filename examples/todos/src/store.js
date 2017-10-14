@@ -1,4 +1,4 @@
-import { extractStore } from 'redux-defmap'
+import { extractStore } from 'redux-jedi'
 
 import todos from './actions/todos'
 import visibilityFilter from './actions/visibilityFilter'

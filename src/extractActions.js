@@ -17,7 +17,7 @@ export default function extractActions(definitionMap, dispatch) {
 
         actionNames.forEach(actionName => {
             if (actions[actionName]) {
-                throw new Error('[DEFMAP] Duplicate action key: ' + actionName)
+                throw new Error('[REDUX-JEDI] Duplicate action key: ' + actionName)
             }
 
             const getPayload = definition[actionName] || definition.$getPayload
@@ -38,10 +38,10 @@ function getActionCaller(name, definition, actions, getPayload) {
     const { $meta } = definition
 
     if (name !== name.toUpperCase()) {
-        throw new Error('[DEFMAP] Action names should be UPPER CASE:', JSON.stringify(name))
+        throw new Error('[REDUX-JEDI] Action names should be UPPER CASE:', JSON.stringify(name))
     }
     if (getPayload && typeof getPayload !== 'function') {
-        throw new Error('[DEFMAP] Payload getter should be a function:', JSON.stringify(definition))
+        throw new Error('[REDUX-JEDI] Payload getter should be a function:', JSON.stringify(definition))
     }
 
     if (!getPayload) {

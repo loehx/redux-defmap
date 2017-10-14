@@ -1,6 +1,8 @@
-# redux-defmap
+# redux-jedi
 
-[![Build State](https://travis-ci.org/loehx/redux-defmap.svg?branch=master)](https://travis-ci.org/loehx/redux-defmap) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e852550356cc4f6aa542bc72895a19f3)](https://www.codacy.com/app/alexander.loehn/redux-defmap?utm_source=github.com&utm_medium=referral&utm_content=loehx/redux-defmap&utm_campaign=Badge_Grade) [![npm version](https://badge.fury.io/js/redux-defmap.svg)](https://badge.fury.io/js/redux-defmap)
+[![Build State](https://travis-ci.org/loehx/redux-jedi.svg?branch=master)](https://travis-ci.org/loehx/redux-jedi) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e852550356cc4f6aa542bc72895a19f3)](https://www.codacy.com/app/alexander.loehn/redux-jedi?utm_source=github.com&utm_medium=referral&utm_content=loehx/redux-jedi&utm_campaign=Badge_Grade) [![npm version](https://badge.fury.io/js/redux-jedi.svg)](https://badge.fury.io/js/redux-jedi)
+
+![Jedi Cat](readme/jedi-cat.gif)
 
 Bring structure to redux applications
 
@@ -8,19 +10,18 @@ Bring structure to redux applications
 
 - Actions, reducers and middleware in one file
 - Action consts defined only once
-- Clear structure / framework
+- Clear structure
 - Payload validation
-- Beautiful syntax
 
 ## Installation
 
 ```
-npm install --save redux-defmap
+npm install --save redux-jedi
 ```
 
-### Example: [DEFAULT](https://github.com/reactjs/redux/tree/master/examples/todos) vs [DEFMAP](https://github.com/loehx/redux-defmap/tree/master/examples/todos)
+### Example: [REDUX](https://github.com/reactjs/redux/tree/master/examples/todos) vs [REDUX-JEDI](https://github.com/loehx/redux-jedi/tree/master/examples/todos)
 
-This example shows the redux integration using default `redux` vs `redux-defmap`.
+This example shows the redux integration using default `redux` vs `redux-jedi`.
 
 ## createStore
 
@@ -31,7 +32,7 @@ Create your store redux-like.
 ```javascript
 import actions from './actions'
 import actionDefinitions from './actionDefinitions';
-import { extractActions, extractMiddleware, extractReducer, createStore, applyMiddleware } from 'redux-defmap'
+import { extractActions, extractMiddleware, extractReducer, createStore, applyMiddleware } from 'redux-jedi'
 
 const middleware = extractMiddleware(actionDefinitions, actions) // (context: actions)
 const reducer = extractReducer(actionDefinitions)
@@ -43,7 +44,7 @@ export default createStore(reducer, initialState, applyMiddleware(middleware), a
 `actions.js`
 
 ```javascript
-import { extractActions } from 'redux-defmap'
+import { extractActions } from 'redux-jedi'
 import actionDefinitions from './actionDefinitions';
 
 export default extractActions(actionDefinitions);
@@ -90,7 +91,7 @@ export default {
 
 ## extractStore
 
-Create your store defmap-like.
+Create your store jedi-like.
 
 ```javascript
 const store = extractStore({
@@ -198,7 +199,7 @@ export default {
 `actions/index.js`
 
 ```javascript
-import { extractActions } from 'redux-defmap';
+import { extractActions } from 'redux-jedi';
 
 import store from './store';
 import app from './app';
