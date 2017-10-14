@@ -2,9 +2,9 @@
 
 [![Build State](https://travis-ci.org/loehx/redux-jedi.svg?branch=master)](https://travis-ci.org/loehx/redux-jedi) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e852550356cc4f6aa542bc72895a19f3)](https://www.codacy.com/app/alexander.loehn/redux-jedi?utm_source=github.com&utm_medium=referral&utm_content=loehx/redux-jedi&utm_campaign=Badge_Grade) [![npm version](https://badge.fury.io/js/redux-jedi.svg)](https://badge.fury.io/js/redux-jedi)
 
-![Jedi Cat](readme/jedi-cat.gif)
+_"FIGHT COMPLEXITY!" - Jedi Cat_
 
-Bring structure to redux applications
+![Jedi Cat](readme/jedi-cat.gif)
 
 ## Why?
 
@@ -21,7 +21,60 @@ npm install --save redux-jedi
 
 ### Example: [REDUX](https://github.com/reactjs/redux/tree/master/examples/todos) vs [REDUX-JEDI](https://github.com/loehx/redux-jedi/tree/master/examples/todos)
 
-This example shows the redux integration using default `redux` vs `redux-jedi`.
+This example shows the redux integration using `default redux` vs `redux-jedi`.
+
+`/examples/todos/src/actions/todos.js`
+
+```javascript
+let nextTodoId = 0;
+
+export default {
+
+    $state: [],
+
+    ADD_TODO: {
+
+        addTodo: (text) => ({
+            id: nextTodoId++,
+            text
+        }),
+
+        $validation: {
+            text: t => typeof t === 'string' && t.length
+        },
+
+        $reduce: (state, payload) => ([
+            ...state,
+            {
+                id: payload.id,
+                text: payload.text,
+                completed: false
+            }
+        ])
+    },
+
+    TOGGLE_TODO: {
+
+        toggleTodo: (id) => ({
+            id
+        }),
+
+        $before: (actions, state, payload) => {
+            // Do stuff before reducing ...
+            // e.g. call another action
+        },
+
+        $reduce: (state, payload) => state.map(todo =>
+            (todo.id === payload.id) ? { ...todo, completed: !todo.completed } : todo
+        ),
+
+        $after: (actions, state, payload) => {
+            // Do stuff after reducing ...
+            // e.g. call another action
+        }
+    }
+}
+```
 
 ## createStore
 
