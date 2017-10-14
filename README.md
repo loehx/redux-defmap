@@ -1,15 +1,16 @@
 # redux-defmap
 
-[![Build State](https://travis-ci.org/loehx/redux-defmap.svg?branch=master)](https://travis-ci.org/loehx/redux-defmap) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e852550356cc4f6aa542bc72895a19f3)](https://www.codacy.com/app/alexander.loehn/redux-defmap?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=loehx/redux-defmap&amp;utm_campaign=Badge_Grade) [![npm version](https://badge.fury.io/js/redux-defmap.svg)](https://badge.fury.io/js/redux-defmap)
+[![Build State](https://travis-ci.org/loehx/redux-defmap.svg?branch=master)](https://travis-ci.org/loehx/redux-defmap) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e852550356cc4f6aa542bc72895a19f3)](https://www.codacy.com/app/alexander.loehn/redux-defmap?utm_source=github.com&utm_medium=referral&utm_content=loehx/redux-defmap&utm_campaign=Badge_Grade) [![npm version](https://badge.fury.io/js/redux-defmap.svg)](https://badge.fury.io/js/redux-defmap)
 
 Bring structure to redux applications
 
 ## Why?
 
-* Actions, reducers and middleware in one file
-* Action consts defined only once
-* Clear structure / framework
-* Payload validation
+- Actions, reducers and middleware in one file
+- Action consts defined only once
+- Clear structure / framework
+- Payload validation
+- Beautiful syntax
 
 ## Installation
 
@@ -17,12 +18,17 @@ Bring structure to redux applications
 npm install --save redux-defmap
 ```
 
+### Example: [DEFAULT](https://github.com/reactjs/redux/tree/master/examples/todos) vs [DEFMAP](https://github.com/loehx/redux-defmap/tree/master/examples/todos)
+
+This example shows the redux integration using default `redux` vs `redux-defmap`.
+
 ## createStore
 
 Create your store redux-like.
 
-`store.js`
-```js
+`store.js`µ
+
+```javascript
 import actions from './actions'
 import actionDefinitions from './actionDefinitions';
 import { extractActions, extractMiddleware, extractReducer, createStore, applyMiddleware } from 'redux-defmap'
@@ -35,7 +41,8 @@ export default createStore(reducer, initialState, applyMiddleware(middleware), a
 ```
 
 `actions.js`
-```js
+
+```javascript
 import { extractActions } from 'redux-defmap'
 import actionDefinitions from './actionDefinitions';
 
@@ -43,7 +50,8 @@ export default extractActions(actionDefinitions);
 ```
 
 `actionDefinitions.js`
-```js
+
+```javascript
 import { isArray, isObject, isString, isBoolean, isDate, isNumber } from 'lodash';
 
 export default {
@@ -79,11 +87,12 @@ export default {
         })
     }
 ```
+
 ## extractStore
 
 Create your store defmap-like.
 
-```js
+```javascript
 const store = extractStore({
     app: {
         // feature #1: Initial State
@@ -116,6 +125,7 @@ const store = extractStore({
 ```
 
 State before calling `store.actions.test()`
+
 ```
 {
     app: {
@@ -128,6 +138,7 @@ State before calling `store.actions.test()`
 ```
 
 State after calling `store.actions.test()`
+
 ```
 {
     app: {
@@ -143,10 +154,10 @@ State after calling `store.actions.test()`
 
 `extractActions(defmap: ActionDefinitionMap, dispatch: Function)`
 
-* `defmap*` ActionDefinitionMap
-* `dispatch` Function to receive the actions (e.g. store.dispatch) OPTIONAL
+- `defmap*` ActionDefinitionMap
+- `dispatch` Function to receive the actions (e.g. store.dispatch) OPTIONAL
 
-```js
+```javascript
 // ActionDefinitionMap
 {
     ACTION_NAME: {
@@ -167,7 +178,7 @@ State after calling `store.actions.test()`
 
 `actions/app.js`
 
-```js
+```javascript
 export default {
     LOADING: {
         setLoading: (on) => ({
@@ -186,7 +197,7 @@ export default {
 
 `actions/index.js`
 
-```js
+```javascript
 import { extractActions } from 'redux-defmap';
 
 import store from './store';
@@ -196,7 +207,8 @@ export default extractActions(app, store.dispatch); // dispatch actions to store
 ```
 
 `some_file.js`
-```js
+
+```javascript
 import actions from './actions';
 
 actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { show: true } }
@@ -206,9 +218,9 @@ actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { s
 
 `extractReducer(defmap: ReducerDefinitionMap)`
 
-* `defmap*` ReducerDefinitionMap
+- `defmap*` ReducerDefinitionMap
 
-```js
+```javascript
 // ReducerDefinitionMap
 {
     ACTION_NAME: {
@@ -247,16 +259,15 @@ actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { s
 }
 ```
 
-
 ## extractMiddleware
 
 `extractMiddleware(defmap: MiddlewareDefinitionMap, context: any, stateKey: string)`
 
-* `defmap*` MiddlewareDefinitionMap
-* `context` Any kind of value that gets simply passed to the events $before and $after (You should put in the actions here)
-* `stateKey` String that defines a partial state (e.g. 'app', 'router', ... | influences the 'state' variable in the event callbacks $before and $after)
+- `defmap*` MiddlewareDefinitionMap
+- `context` Any kind of value that gets simply passed to the events $before and $after (You should put in the actions here)
+- `stateKey` String that defines a partial state (e.g. 'app', 'router', ... | influences the 'state' variable in the event callbacks $before and $after)
 
-```js
+```javascript
 // MiddlewareDefinitionMap
 {
     ACTION_NAME: {
