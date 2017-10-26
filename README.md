@@ -19,6 +19,25 @@ _"FIGHT COMPLEXITY!" - Jedi Cat_
 npm install --save redux-jedi
 ```
 
+## Structure
+
+```js
+{
+    $state: { ... },
+
+    ACTION_NAME: {
+        actionCreator: (...) => ({ ... }),
+
+        $before: (actions, state, payload) => { ... },
+        $validation: { ... },
+        $reduce: (state, payload) => ({ ...state, ... }),
+        $after: (actions, state, payload) => { ... },
+        $meta: { ... }
+    },
+    ...
+}
+```
+
 ### Example: [REDUX](https://github.com/reactjs/redux/tree/master/examples/todos) vs [REDUX-JEDI](https://github.com/loehx/redux-jedi/tree/master/examples/todos)
 
 This example shows the redux integration using `default redux` vs `redux-jedi`.
