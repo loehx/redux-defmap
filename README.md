@@ -99,7 +99,7 @@ export default {
 
 Create your store redux-like.
 
-`store.js`µ
+`store.js`
 
 ```javascript
 import actions from './actions'
@@ -235,7 +235,7 @@ State after calling `store.actions.test()`
 {
     ACTION_NAME: {
         actionCreator1: (arg) => arg, // actionCreator2('hello') => { type: 'ACTION_NAME', payload: 'hello' },
-        actionCreator2: (arg) => { arg }, // actionCreator2('hello') => { type: 'ACTION_NAME', payload: { arg: 'hello' } },
+        actionCreator2: (arg) => ({ arg }), // actionCreator2('hello') => { type: 'ACTION_NAME', payload: { arg: 'hello' } },
         actionCreator3: (arg1, arg2) => arg1 + arg2, // actionCreator3(1, 1) => { type: 'ACTION_NAME', payload: 2 },
         actionCreator4: () => null, // dispatches { type: 'ACTION_NAME' },
         actionCreator5: () => undefined, // dispatches NOTHING,
