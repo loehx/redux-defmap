@@ -1,5 +1,4 @@
 import validatePayload from './validatePayload'
-import { ensureSubState } from './util'
 
 export default function extractReducer(definitionMap) {
     return function(state = {}, action) {
@@ -13,8 +12,6 @@ export default function extractReducer(definitionMap) {
         if (definition.$validation) {
             validatePayload(definition.$validation, type, payload)
         }
-
-        state = ensureSubState(state, definition.$stateKey)
 
         return definition.$reduce(state, payload)
     }

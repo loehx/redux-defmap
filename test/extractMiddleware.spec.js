@@ -1,5 +1,5 @@
 import { assert } from 'chai'
-import { extractActions, extractMiddleware, extractReducer, createStore, applyMiddleware } from '../src'
+import { extractMiddleware, extractStore } from '../src'
 
 describe('extractMiddleware', () => {
     test()
@@ -51,42 +51,36 @@ function test() {
         let $after = () => void(0)
         let $middleware = null
 
+        const initialState = 0
         const sample = {
-            TEST: {
-                test: a => a,
+            test: {
+                $state: initialState,
+                TEST: {
+                    test: a => a,
 
-                $before: (...args) => {
-                    $before(...args)
-                },
+                    $before: (...args) => {
+                        $before(...args)
+                    },
 
-                $after: (...args) => {
-                    $after(...args)
-                },
+                    $after: (...args) => {
+                        $after(...args)
+                    },
 
-                $middleware: (state, next, action) => {
-                    if ($middleware) {
-                        $middleware(state, next, action)
-                    } else {
-                        next(action)
-                    }
-                },
+                    $middleware: (state, next, action) => {
+                        if ($middleware) {
+                            $middleware(state, next, action)
+                        } else {
+                            next(action)
+                        }
+                    },
 
-                $reduce: (state, payload) => ({
-                    ...state,
-                    test: payload
-                })
+                    $reduce: (state, payload) => payload
+                }
             }
         }
 
-        const actions = extractActions(sample)
-        const middleware = extractMiddleware(sample, actions)
-        const reducer = extractReducer(sample)
-        const initialState = { test: 0 }
-        const store = createStore(reducer, initialState, applyMiddleware(middleware), actions)
-
-        it('should have created a middleware', () => {
-            assert.typeOf(middleware, 'function')
-        })
+        const store = extractStore(sample)
+        const actions = store.actions
 
         it('should call $before', () => {
             let ran = false
@@ -95,7 +89,7 @@ function test() {
             $before = (context, state, payload) => {
                 ran = true
                 assert.equal(context, actions)
-                assert.equal(state, initialState)
+                assert.equal(state.test, 0)
                 assert.equal(payload, 1)
                 assert.equal(state.test, 0)
             }
@@ -151,44 +145,39 @@ function test() {
         let $after = () => void(0)
         let $middleware = null
 
+        const initialState = 0
         const sample = {
-            TEST: {
-                test: a => a,
+            test: {
+                $state: initialState,
+                TEST: {
+                    test: a => a,
 
-                $before: (...args) => {
-                    $before(...args)
-                },
+                    $before: (...args) => {
+                        $before(...args)
+                    },
 
-                $after: (...args) => {
-                    $after(...args)
-                },
+                    $after: (...args) => {
+                        $after(...args)
+                    },
 
-                $middleware: (state, next, action) => {
-                    if ($middleware) {
-                        $middleware(state, next, action)
-                    } else {
-                        next(action)
-                    }
-                },
+                    $middleware: (state, next, action) => {
+                        if ($middleware) {
+                            $middleware(state, next, action)
+                        } else {
+                            next(action)
+                        }
+                    },
 
-                $reduce: (state, payload) => ({
-                    ...state,
-                    test: payload
-                })
+                    $reduce: (state, payload) => ({
+                        ...state,
+                        test: payload
+                    })
+                }
             }
         }
 
-        const actions = extractActions(sample)
-        const middleware = extractMiddleware(sample, actions, 'app')
-        const reducer = extractReducer(sample)
-        const initialState = { app: { test: 0 } }
-        const store = createStore({
-            app: reducer
-        }, initialState, applyMiddleware(middleware), actions)
-
-        it('should have created a middleware', () => {
-            assert.typeOf(middleware, 'function')
-        })
+        const store = extractStore(sample)
+        const actions = store.actions
 
         it('should call $before', () => {
             let ran = false
@@ -197,7 +186,7 @@ function test() {
             $before = (context, state, payload) => {
                 ran = true
                 assert.equal(context, actions)
-                assert.equal(state, initialState.app)
+                assert.equal(state.test, initialState)
                 assert.equal(payload, 1)
                 assert.equal(state.test, 0)
             }
@@ -205,7 +194,7 @@ function test() {
             actions.test(1)
 
             assert.ok(ran)
-            assert.equal(store.getState().app.test, 1)
+            assert.equal(store.getState().test.test, 1)
         })
 
         it('should call $after', () => {
@@ -217,7 +206,7 @@ function test() {
                 assert.equal(context, actions)
                 assert.notEqual(state, initialState)
                 assert.equal(payload, 1)
-                assert.equal(state.test, 1)
+                assert.equal(state.test.test, 1)
             }
 
             actions.test(1)
@@ -245,7 +234,6 @@ function test() {
                 assert.equal(context, actions)
                 assert.notEqual(state, initialState)
                 assert.equal(payload, 2)
-                assert.equal(state.test, 2)
             }
 
             actions.test(1)

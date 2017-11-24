@@ -1,13 +1,11 @@
-import { createStore, applyMiddleware, combineReducers } from 'redux'
+import { createStore, combineReducers } from 'redux'
 
 function Store(reducers, initialState, enhancer, actions) {
     /* eslint-disable no-underscore-dangle */
-    // const devTools = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-    /* eslint-enable */
-
-    if (typeof enhancer === 'object' && enhancer.length) {
-        enhancer = applyMiddleware(...enhancer)
+    if (typeof window === 'object' && typeof window['__REDUX_DEVTOOLS_EXTENSION__'] === 'function') {
+        enhancer = window['__REDUX_DEVTOOLS_EXTENSION__']()(enhancer)
     }
+    /* eslint-enable */
 
     if (typeof reducers === 'object') {
         reducers = combineReducers(reducers)

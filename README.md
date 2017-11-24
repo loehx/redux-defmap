@@ -12,6 +12,7 @@ _"FIGHT COMPLEXITY!" - Jedi Cat_
 - Action consts defined only once
 - Clear structure
 - Payload validation
+- Automatically connects to [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
 
 ## Installation
 
@@ -23,18 +24,22 @@ npm install --save redux-jedi
 
 ```js
 {
-    $state: { ... },
+    stateKey: {
 
-    ACTION_NAME: {
-        actionCreator: (...) => ({ ... }),
+        $state: { ... },
 
-        $middleware: (state, next, action) => { ... },
-        $before: (actions, state, payload) => { ... },
-        $validation: { ... },
-        $reduce: (state, payload) => ({ ...state, ... }),
-        $after: (actions, state, payload) => { ... },
-        $meta: { ... }
-    },
+        ACTION_NAME: {
+            actionCreator: (...) => ({ ... }),
+
+            $middleware: (state, next, action) => { ... },
+            $before: (actions, state, payload) => { ... },
+            $validation: { ... },
+            $reduce: (state, payload) => ({ ...state, ... }),
+            $after: (actions, state, payload) => { ... },
+            $meta: { ... }
+        },
+        ...
+    }
     ...
 }
 ```
@@ -96,78 +101,14 @@ export default {
 }
 ```
 
-## createStore
-
-Create your store redux-like.
-
-`store.js`
-
-```javascript
-import actions from './actions'
-import actionDefinitions from './actionDefinitions';
-import { extractActions, extractMiddleware, extractReducer, createStore, applyMiddleware } from 'redux-jedi'
-
-const middleware = extractMiddleware(actionDefinitions, actions) // (context: actions)
-const reducer = extractReducer(actionDefinitions)
-const initialState = { }
-
-export default createStore(reducer, initialState, applyMiddleware(middleware), actions);
-```
-
-`actions.js`
-
-```javascript
-import { extractActions } from 'redux-jedi'
-import actionDefinitions from './actionDefinitions';
-
-export default extractActions(actionDefinitions);
-```
-
-`actionDefinitions.js`
-
-```javascript
-import { isArray, isObject, isString, isBoolean, isDate, isNumber } from 'lodash';
-
-export default {
-    APP_START: {
-        fireAppStart: () => null,
-        $after: (context, state, payload) => { // (context: actions)
-            context.showLogo();
-        }
-    },
-    SHOW_LOGO: {
-        showLogo: () => true,
-        hideLogo: () => false,
-        $validation: isBoolean,
-        $reduce: (state, payload) => ({
-            ...state,
-            showLogo: payload
-        })
-    },
-    SHOW_ERROR: {
-        showError: (message) => ({
-            message
-        }),
-        hideError: () => ({
-            message: null
-        }),
-        $validation: {
-            message: m => !m || isString(m) // can be empty or a string
-        },
-        $reduce: (state, payload) => ({
-            ...state,
-            showError: !!payload,
-            errorMessage: payload
-        })
-    }
-```
-
 ## extractStore
 
 Create your store jedi-like.
 
 ```javascript
 const store = extractStore({
+
+    // state key: app
     app: {
         // feature #1: Initial State
         $state: {
@@ -304,15 +245,6 @@ actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { s
             // ...
         })
 
-        // equals ...
-
-        $reduce: (store, payload) => {
-            return {
-                ...store
-                // ...
-            }
-        }
-
         // Payload validation (simple) OPTIONAL
         $validation: p => typeof p === 'string'
         // OK: { type: 'ACTION_NAME', payload: 'Hello World' }
@@ -365,7 +297,14 @@ actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { s
 ## v1.0.7
 
 * Added `$middleware` keyword to provide async actions
-* Added some unit tests to improve code coverage
+* Improve code coverage
+
+## v1.0.8
+
+* Added auto connect to [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
+* Removed `createStore` (Please use `extractStore` instead)
+* Removed `$stateKey` (which was not documented)
+* Improve code coverage
 
 # License
 

@@ -8,19 +8,23 @@ require('babel-polyfill')
 
 export default function extractStore(defMapMap) {
     let actions = {}
-    const middlewares = []
-    const reducers = {}
     const initialState = {}
+    const reducers = {}
+    const middlewares = []
 
     for (let stateKey in defMapMap) {
         const defmap = defMapMap[stateKey]
 
-        if (defmap.$state) {
+        if (typeof defmap !== 'object' || stateKey.toUpperCase() === stateKey) {
+            throw Error('[REDUX-JEDI] Every definition map needs to be wrapped in a state key.')
+        }
+
+        if (defmap.hasOwnProperty('$state')) {
             initialState[stateKey] = defmap.$state
             delete defmap['$state']
         }
 
-        if (defmap.$reducer) {
+        if (defmap.hasOwnProperty('$reducer')) {
             reducers[stateKey] = defmap.$reducer
             delete defmap['$reducer']
         } else {
@@ -42,7 +46,10 @@ export default function extractStore(defMapMap) {
         }
     }
 
-    const store = createStore(reducers, initialState, applyMiddleware(...middlewares), actions)
+    const store = createStore(reducers,
+        initialState,
+        applyMiddleware(...middlewares),
+        actions)
 
     store.actions = actions
 

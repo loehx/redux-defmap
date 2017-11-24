@@ -1,6 +1,6 @@
 {
     "name": "redux-jedi",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "Bring structure to your redux application",
     "main": "index.js",
     "files": [
@@ -15,7 +15,7 @@
         "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack",
         "clean": "./node_modules/.bin/rimraf lib dist es",
         "lint": "./node_modules/.bin/eslint webpack.config.babel.js src test",
-        "prepublish": "npm run test && npm run clean && npm run build",
+        "prepublish": "npm run test && npm run test:cov && npm run test:coveralls && npm run clean && npm run build",
         "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --compilers js:babel-core/register",
         "test:bail": "npm run test:watch -- --bail",
         "test:cov": "nyc --reporter=text-lcov --require babel-register mocha test/*.spec.js",

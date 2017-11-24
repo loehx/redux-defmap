@@ -19,6 +19,22 @@ function test() {
             assert.typeOf(store.actions.test, 'function')
         })
 
+        if (typeof window === 'object') {
+            it('should extract actions', () => {
+                let ran = false
+                window.__REDUX_DEVTOOLS_EXTENSION__ = function() {
+                    return function(a) {
+                        ran = true
+                        return a
+                    }
+                }
+                extractStore({
+                    app: {}
+                })
+                assert.ok(ran)
+            })
+        }
+
         it('should create initial state', () => {
             const store = extractStore({
                 app: {
@@ -32,6 +48,40 @@ function test() {
             })
             assert.typeOf(store.getState(), 'object')
             assert.equal(store.getState().app.count, -1)
+        })
+
+        it('should throw error if state key is missing', () => {
+            assert.throws(() => {
+                extractStore({
+                    $state: {
+                        count: -1
+                    },
+                    TEST: {
+                        func: () => null
+                    }
+                })
+            })
+        })
+
+        it('should create sub state', () => {
+            const store = extractStore({
+                app: {
+                    $state: {},
+                    APP_START: {
+                        $stateKey: 'subState',
+                        test: (n) => n,
+                        $before: (actions, state, payload) => {
+                            state
+                        },
+                        $reduce: (state, n) => ({
+                            ...state,
+                            n
+                        })
+                    }
+                }
+            })
+            store.actions.test(1)
+            assert.equal(store.getState().app.n, 1)
         })
 
         it('should call middleware', () => {
@@ -124,6 +174,32 @@ function test() {
 
             store.actions.test()
             assert.equal(store.getState().app.count, 1)
+        })
+
+        it('should apply extra middlewares', () => {
+            let count = 0
+            const store = extractStore({
+                app: {
+                    APP_START: {
+                        test: a => ({ i: 0 })
+                    }
+                },
+                middleware1: {
+                    $middleware: store => next => action => {
+                        count++
+                        next(action)
+                    }
+                },
+                middleware2: {
+                    $middleware: store => next => action => {
+                        count++
+                        next(action)
+                    }
+                }
+            })
+
+            store.actions.test()
+            assert.equal(2, count)
         })
     })
 }

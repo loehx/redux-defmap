@@ -37,7 +37,7 @@ export default {
                     options: { esModules: true }
                 },
                 enforce: 'post',
-                exclude: /node_modules|\.spec\.js$/,
+                exclude: /node_modules|\.spec\.js$/
             }
         ]
     },
