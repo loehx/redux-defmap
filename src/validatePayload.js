@@ -5,7 +5,7 @@ export default function validatePayload(validation, name, payload) {
         }
     } else /* typeof $validation === 'object' */ {
         if (typeof payload !== 'object') {
-            return console.error('[REDUX-JEDI] Missing payload in action: ' + name, validation, payload)
+            throw Error('[REDUX-JEDI] Missing payload in action: ' + name, validation, payload)
         }
 
         const errors = Object.keys(validation)

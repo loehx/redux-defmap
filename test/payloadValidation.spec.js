@@ -77,5 +77,10 @@ function testPayloadValidation() {
 
             assert.throws(() => reducer({}, { type: 'TEST', payload }))
         })
+
+        it('should fail (because payload is missing)', () => {
+            const reducer = extractReducer(sample)
+            assert.throws(() => reducer({}, { type: 'TEST' }))
+        })
     })
 }
