@@ -28,6 +28,7 @@ npm install --save redux-jedi
     ACTION_NAME: {
         actionCreator: (...) => ({ ... }),
 
+        $middleware: (state, next, action) => { ... },
         $before: (actions, state, payload) => { ... },
         $validation: { ... },
         $reduce: (state, payload) => ({ ...state, ... }),
@@ -358,6 +359,13 @@ actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { s
     }
 }
 ```
+
+# Change Log
+
+## v1.0.7
+
+* Added `$middleware` keyword to provide async actions
+* Added some unit tests to improve code coverage
 
 # License
 

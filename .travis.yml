@@ -11,5 +11,8 @@ notifications:
     on_start: never     # options: [always|never|change] default: always
 script:
   - npm run test
+before_install:
+  - pip install --user codecov
 after_success:
   - npm run test:coveralls
+  - codecov --file coverage/lcov.info --disable search

@@ -19,6 +19,50 @@ function test() {
             assert.typeOf(actions.test, 'function')
         })
 
+        it('should throw "Duplicate action key"', () => {
+            const sample = {
+                TEST: {
+                    test: () => null
+                },
+                TEST2: {
+                    test: () => null
+                }
+            }
+            assert.throws(() => extractActions(sample))
+        })
+
+        it('should throw "Action names should be UPPER CASE"', () => {
+            const sample = {
+                test: {
+                    test: () => void(0)
+                }
+            }
+            assert.throws(() => extractActions(sample))
+        })
+
+        it('should throw "Payload getter should be a function"', () => {
+            const sample = {
+                TEST: {
+                    test: 1
+                }
+            }
+            assert.throws(() => extractActions(sample))
+        })
+
+        it('should add meta options', () => {
+            const meta = { info: 'test' }
+            const sample = {
+                TEST: {
+                    test: () => 1,
+                    $meta: meta
+                }
+            }
+            const actions = extractActions(sample)
+            const action = actions.test()
+            assert.equal(meta, action.meta)
+            assert.equal(meta.info, action.meta.info)
+        })
+
         it('should dispatch a single action', () => {
             let dispatched = null
             const actions = extractActions(sample, (a) => dispatched = a)
@@ -61,21 +105,6 @@ function test() {
         })
 
         it('should dispatch a single action', () => {
-            let dispatched = null
-            const actions = extractActions(sample, (a) => dispatched = a)
-
-            actions.typeof('TEST')
-
-            assert.typeOf(dispatched, 'object')
-            assert.equal(dispatched.type, 'TYPEOF')
-            assert.equal(dispatched.payload, 'string')
-
-            actions.typeofUpperCase(true)
-            assert.equal(dispatched.type, 'TYPEOF')
-            assert.equal(dispatched.payload, 'BOOLEAN')
-        })
-
-        it('should not ', () => {
             let dispatched = null
             const actions = extractActions(sample, (a) => dispatched = a)
 

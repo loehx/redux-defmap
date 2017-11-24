@@ -3,13 +3,14 @@ import { ensureSubState } from './util'
 function extractMiddleware(definitionMap, context, stateKey) {
     const filteredDefinitionMap = {}
     for (let k in definitionMap) {
-        let { $before, $after, $stateKey } = definitionMap[k]
+        let { $before, $after, $middleware, $stateKey } = definitionMap[k]
 
-        if (typeof $before === 'function' || typeof $after === 'function') {
+        if ($before || $after || $middleware) {
             filteredDefinitionMap[k] = {
                 $after,
                 $before,
-                $stateKey
+                $middleware,
+                $stateKey: $stateKey || stateKey
             }
         }
     }
@@ -22,18 +23,27 @@ function extractMiddleware(definitionMap, context, stateKey) {
         const definition = filteredDefinitionMap[action.type]
         if (!definition) return next(action)
 
-        if (definition.$before) {
-            let state = store.getState()
-            state = ensureSubState(state, stateKey)
-            definition.$before(context, state, action.payload)
+        const { $before, $after, $middleware } = definition
+        let state = store.getState()
+        state = ensureSubState(state, stateKey)
+
+        if ($before) {
+            $before(context, state, action.payload)
         }
 
-        next(action)
+        const _next = function(action) {
+            next(action)
+            if ($after) {
+                let state = store.getState()
+                state = ensureSubState(state, stateKey)
+                $after(context, state, action.payload)
+            }
+        }
 
-        if (definition.$after) {
-            let state = store.getState()
-            state = ensureSubState(state, stateKey)
-            definition.$after(context, state, action.payload)
+        if ($middleware) {
+            $middleware(state, _next, action)
+        } else {
+            _next(action)
         }
     }
 

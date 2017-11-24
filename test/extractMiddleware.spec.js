@@ -27,6 +27,16 @@ function test() {
             assert.typeOf(middleware, 'function')
         })
 
+        it('should extract a middleware ($middleware)', () => {
+            const sample = {
+                TEST: {
+                    $middleware: () => void(0)
+                }
+            }
+            const middleware = extractMiddleware(sample)
+            assert.typeOf(middleware, 'function')
+        })
+
         it('should not extract any middleware', () => {
             const sample = {
                 TEST: {}
@@ -39,6 +49,7 @@ function test() {
     describe('Middleware Extraction (with store)', () => {
         let $before = () => void(0)
         let $after = () => void(0)
+        let $middleware = null
 
         const sample = {
             TEST: {
@@ -50,6 +61,14 @@ function test() {
 
                 $after: (...args) => {
                     $after(...args)
+                },
+
+                $middleware: (state, next, action) => {
+                    if ($middleware) {
+                        $middleware(state, next, action)
+                    } else {
+                        next(action)
+                    }
                 },
 
                 $reduce: (state, payload) => ({
@@ -103,11 +122,34 @@ function test() {
 
             assert.ok(ran)
         })
+
+        it('should call $middleware', () => {
+            let ran = false
+
+            $middleware = (state, next, action) => {
+                ran = true
+                next({
+                    type: action.type,
+                    payload: action.payload + 1
+                })
+            }
+            $after = (context, state, payload) => {
+                assert.equal(context, actions)
+                assert.notEqual(state, initialState)
+                assert.equal(payload, 2)
+                assert.equal(state.test, 2)
+            }
+
+            actions.test(1)
+
+            assert.ok(ran)
+        })
     })
 
     describe('Middleware Extraction (with state key)', () => {
         let $before = () => void(0)
         let $after = () => void(0)
+        let $middleware = null
 
         const sample = {
             TEST: {
@@ -119,6 +161,14 @@ function test() {
 
                 $after: (...args) => {
                     $after(...args)
+                },
+
+                $middleware: (state, next, action) => {
+                    if ($middleware) {
+                        $middleware(state, next, action)
+                    } else {
+                        next(action)
+                    }
                 },
 
                 $reduce: (state, payload) => ({
@@ -168,6 +218,34 @@ function test() {
                 assert.notEqual(state, initialState)
                 assert.equal(payload, 1)
                 assert.equal(state.test, 1)
+            }
+
+            actions.test(1)
+
+            assert.ok(ran)
+        })
+
+        it('should call $middleware', () => {
+            let ran = false
+            let beforeState = null
+
+            $before = (context, state, payload) => {
+                beforeState = state
+            }
+
+            $middleware = (state, next, action) => {
+                ran = true
+                assert.equal(beforeState, state)
+                next({
+                    type: action.type,
+                    payload: action.payload + 1
+                })
+            }
+            $after = (context, state, payload) => {
+                assert.equal(context, actions)
+                assert.notEqual(state, initialState)
+                assert.equal(payload, 2)
+                assert.equal(state.test, 2)
             }
 
             actions.test(1)
