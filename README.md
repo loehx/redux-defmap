@@ -1,6 +1,6 @@
 # redux-jedi
 
-[![Build State](https://travis-ci.org/loehx/redux-jedi.svg?branch=master)](https://travis-ci.org/loehx/redux-jedi) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d60681fea1374aaa8f7d4c20ceac5a0f)](https://www.codacy.com/app/loehx/redux-defmap?utm_source=github.com&utm_medium=referral&utm_content=loehx/redux-defmap&utm_campaign=Badge_Grade) [![npm version](https://badge.fury.io/js/redux-jedi.svg)](https://badge.fury.io/js/redux-jedi)
+[![Build State](https://travis-ci.org/loehx/redux-jedi.svg?branch=master)](https://travis-ci.org/loehx/redux-jedi) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d60681fea1374aaa8f7d4c20ceac5a0f)](https://www.codacy.com/app/loehx/redux-defmap?utm_source=github.com&utm_medium=referral&utm_content=loehx/redux-defmap&utm_campaign=Badge_Grade) [![npm version](https://badge.fury.io/js/redux-jedi.svg)](https://badge.fury.io/js/redux-jedi) [![Coverage Status](https://coveralls.io/repos/github/loehx/redux-defmap/badge.svg)](https://coveralls.io/github/loehx/redux-defmap)
 
 _"FIGHT COMPLEXITY!" - Jedi Cat_
 

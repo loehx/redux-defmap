@@ -25,8 +25,20 @@ NODE_ENV === 'production' && plugins.push(
 
 export default {
     module: {
-        rules: [
-            { test: /\.js$/, use: ['babel-loader'], exclude: /node_modules/ }
+        rules: [{
+                test: /\.js$/,
+                use: ['babel-loader'],
+                exclude: /node_modules/
+            },
+            {
+                test: /\.js$|\.jsx$/,
+                use: {
+                    loader: 'istanbul-instrumenter-loader',
+                    options: { esModules: true }
+                },
+                enforce: 'post',
+                exclude: /node_modules|\.spec\.js$/,
+            }
         ]
     },
 
