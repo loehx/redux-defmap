@@ -308,7 +308,7 @@ actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { s
 
 ## v1.0.9 (COMING SOON)
 
-* Removed `compose`, `connect` and `combineReducers`
+* Removed `compose`, `connect`, `applyMiddleware` and `combineReducers`
 
 # License
 
