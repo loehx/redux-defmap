@@ -306,6 +306,10 @@ actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { s
 * Removed `$stateKey` (which was not documented)
 * Improve code coverage
 
+## v1.0.9 (COMING SOON)
+
+* Removed `compose`, `connect` and `combineReducers`
+
 # License
 
 MIT © 2017 Alexander Löhn
