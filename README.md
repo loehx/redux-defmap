@@ -309,6 +309,7 @@ actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { s
 ## v1.0.9 (COMING SOON)
 
 * Removed `compose`, `connect`, `applyMiddleware` and `combineReducers`
+* $middleware now wraps `$before`, `$reduce` and `$after` instead of only `$reduce` and `$after` 
 
 # License
 
