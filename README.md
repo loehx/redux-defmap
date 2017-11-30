@@ -134,7 +134,10 @@ const store = extractStore({
         $middleware: someMiddleware, // store => next => action => { ... }
 
         // feature #3: Extra Reducer
-        $reducer: someReducer, //  // (state, action) => { ... }
+        $reducer: someReducer, // (state, action) => { ... }
+
+        // feature #4: Extra Enhancer
+        $enhancer: someReducer, // (createStore) => (...args) => createStore(...args)
     }
 })
 ```
@@ -306,9 +309,17 @@ actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { s
 * Removed `$stateKey` (which was not documented)
 * Improve code coverage
 
-## v1.0.9 (COMING SOON)
+## v1.0.9
+
+* Added extractStore feature #4: `$enhancer`
+* Bug fixing (redux-dev-tools)
+
+## v1.0.10 (COMING SOON)
 
 * Removed `compose`, `connect`, `applyMiddleware` and `combineReducers`
+* Added `$cancel: [ '<ACTION_NAME>' ]` and `$onCancel: () => { ... }`
+* Added `$debounce: <milliseconds>` and `$debounceImmediate: <boolean|default:true>`
+* Added `$waitFor: [ '<ACTION_NAME>' ]`
 
 # License
 

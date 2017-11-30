@@ -16,13 +16,14 @@ function test() {
                 }
             })
             assert.typeOf(store.actions, 'object')
+            assert.typeOf(store.subscribe, 'function')
             assert.typeOf(store.actions.test, 'function')
         })
 
         if (typeof window === 'object') {
             it('should extract actions', () => {
                 let ran = false
-                window.__REDUX_DEVTOOLS_EXTENSION__ = function() {
+                window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = function() {
                     return function(a) {
                         ran = true
                         return a
@@ -48,6 +49,22 @@ function test() {
             })
             assert.typeOf(store.getState(), 'object')
             assert.equal(store.getState().app.count, -1)
+        })
+
+        it('should create store with special enhancer', () => {
+            let enhancerLoaded = false
+            extractStore({
+                app: {
+                    $enhancer: (next) => {
+                        return (...args) => {
+                            enhancerLoaded = true
+                            return next(...args)
+                        }
+                    }
+                }
+            })
+
+            assert.ok(enhancerLoaded)
         })
 
         it('should throw error if state key is missing', () => {

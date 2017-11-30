@@ -1,17 +1,16 @@
-import { createStore, combineReducers } from 'redux'
+import { createStore, combineReducers, compose } from 'redux'
 
-function Store(reducers, initialState, enhancer, actions) {
+function Store(reducers, initialState, enhancers, actions) {
     /* eslint-disable no-underscore-dangle */
-    if (typeof window === 'object' && typeof window['__REDUX_DEVTOOLS_EXTENSION__'] === 'function') {
-        enhancer = window['__REDUX_DEVTOOLS_EXTENSION__']()(enhancer)
-    }
+    const composeEnhancers =
+        typeof window === 'object' && window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] ? window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__']({}) : compose
     /* eslint-enable */
 
     if (typeof reducers === 'object') {
         reducers = combineReducers(reducers)
     }
 
-    const store = createStore(reducers, initialState, enhancer)
+    const store = createStore(reducers, initialState, composeEnhancers(...enhancers))
 
     for (let k in actions) {
         if (actions[k].definition) {

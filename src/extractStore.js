@@ -11,6 +11,7 @@ export default function extractStore(defMapMap) {
     const initialState = {}
     const reducers = {}
     const middlewares = []
+    const enhancers = []
 
     for (let stateKey in defMapMap) {
         const defmap = defMapMap[stateKey]
@@ -35,6 +36,11 @@ export default function extractStore(defMapMap) {
         const a = extractActions(defmap)
         Object.assign(actions, a)
 
+        if (defmap.$enhancer) {
+            enhancers.push(defmap.$enhancer)
+            delete defmap['$enhancer']
+        }
+
         if (defmap.$middleware) {
             middlewares.push(defmap.$middleware)
             delete defmap['$middleware']
@@ -46,9 +52,11 @@ export default function extractStore(defMapMap) {
         }
     }
 
+    enhancers.push(applyMiddleware(...middlewares))
+
     const store = createStore(reducers,
         initialState,
-        applyMiddleware(...middlewares),
+        enhancers,
         actions)
 
     store.actions = actions
