@@ -13,6 +13,7 @@ _"FIGHT COMPLEXITY!" - Jedi Cat_
 - Clear structure
 - Payload validation
 - Automatically connects to [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
+- Async actions
 
 ## Installation
 
@@ -295,6 +296,66 @@ actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { s
 }
 ```
 
+## Async
+
+Actions created with `extractStore` have a promise-resolving middleware.
+
+```js
+const store = extractStore({
+  app: {
+    TEST: {
+      
+      test: arg1 => new Promise((resolve, reject) => {
+        if (typeof arg1 !== 'number') {
+          return reject('Parameter arg1 should be a function.');
+        }
+        setTimeout(() => resolve(arg1), 1000) // delay 1 sec
+      }),
+      
+      $before: (actions, state, payload) => {
+        assert.typeOf(payload.then, 'function') // Still a promise at this point
+      },
+      
+      $reduce: (state, payload) => {
+        assert.equal(payload, 1337)
+        return {
+          ...state,
+          test: payload
+        }
+      }
+      
+    }
+  }
+})
+```
+Resolved example:
+
+```javascript
+> store.actions.test(1337)
+{
+  type: "TEST",
+  payload: [Promise]
+}
+
+// After async middleware:
+{
+  type: "TEST",
+  payload: 1337
+}
+```
+
+Rejected example: (Please mention the new type: **TEST_ERROR**)
+
+```javascript
+> store.actions.test("1337")
+
+// After async middleware:
+{
+  type: "TEST_ERROR",
+  payload: "Parameter arg1 should be a function."
+}
+```
+
 # Change Log
 
 ## v1.0.7
@@ -314,9 +375,13 @@ actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { s
 * Added extractStore feature #4: `$enhancer`
 * Bug fixing (redux-dev-tools)
 
-## v1.0.10 (COMING SOON)
+## v1.0.10
 
 * Removed `compose`, `connect`, `applyMiddleware` and `combineReducers`
+* Added async middleware
+
+## v1.0.11 (COMING SOON)
+
 * Added `$cancel: [ '<ACTION_NAME>' ]` and `$onCancel: () => { ... }`
 * Added `$debounce: <milliseconds>` and `$debounceImmediate: <boolean|default:true>`
 * Added `$waitFor: [ '<ACTION_NAME>' ]`

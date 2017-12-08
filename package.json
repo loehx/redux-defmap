@@ -1,6 +1,6 @@
 {
     "name": "redux-jedi",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "description": "Bring structure to your redux application",
     "main": "index.js",
     "files": [
@@ -69,6 +69,7 @@
         "npm-run-all": "^3.1.2",
         "nyc": "^10.3.2",
         "redux": "^3.7.1",
+        "redux-thunk": "^2.2.0",
         "rimraf": "^2.5.4",
         "wallaby-webpack": "0.0.45",
         "webpack": "^3.8.1"

@@ -18,7 +18,9 @@ function extractMiddleware(definitionMap, context, stateKey) {
 
     const func = store => next => action => {
         const definition = filteredDefinitionMap[action.type]
-        if (!definition) return next(action)
+        if (!definition) {
+            return next(action)
+        }
 
         const { $before, $after, $middleware } = definition
         const state = store.getState()
