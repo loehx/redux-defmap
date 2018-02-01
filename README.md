@@ -304,18 +304,18 @@ Actions created with `extractStore` have a promise-resolving middleware.
 const store = extractStore({
   app: {
     TEST: {
-      
+
       test: arg1 => new Promise((resolve, reject) => {
         if (typeof arg1 !== 'number') {
           return reject('Parameter arg1 should be a function.');
         }
         setTimeout(() => resolve(arg1), 1000) // delay 1 sec
       }),
-      
+
       $before: (actions, state, payload) => {
         assert.typeOf(payload.then, 'function') // Still a promise at this point
       },
-      
+
       $reduce: (state, payload) => {
         assert.equal(payload, 1337)
         return {
@@ -323,7 +323,7 @@ const store = extractStore({
           test: payload
         }
       }
-      
+
     }
   }
 })
@@ -380,7 +380,11 @@ Rejected example: (Please mention the new type: **TEST_ERROR**)
 * Removed `compose`, `connect`, `applyMiddleware` and `combineReducers`
 * Added async middleware
 
-## v1.0.11 (COMING SOON)
+## v1.0.11
+
+* Build fixed
+
+## v1.0.12 (COMING SOON)
 
 * Added `$cancel: [ '<ACTION_NAME>' ]` and `$onCancel: () => { ... }`
 * Added `$debounce: <milliseconds>` and `$debounceImmediate: <boolean|default:true>`

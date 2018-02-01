@@ -2,7 +2,6 @@ import { applyMiddleware } from 'redux'
 import extractActions from './extractActions'
 import extractMiddleware from './extractMiddleware'
 import extractReducer from './extractReducer'
-import asyncMiddleware from './asyncMiddleware'
 import createStore from './store'
 
 require('babel-polyfill')
@@ -52,8 +51,6 @@ export default function extractStore(defMapMap) {
         const a = extractActions(defmap)
         Object.assign(actions, a)
     }
-
-    middlewares.push(asyncMiddleware);
 
     enhancers.push(applyMiddleware(...middlewares))
 
