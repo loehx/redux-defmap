@@ -1,6 +1,6 @@
 {
     "name": "redux-jedi",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "description": "Bring structure to your redux application",
     "main": "index.js",
     "files": [

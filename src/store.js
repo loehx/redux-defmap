@@ -1,9 +1,9 @@
 import { createStore, combineReducers, compose } from 'redux'
 
-function Store(reducers, initialState, enhancers, actions) {
+function Store(reducers, initialState, enhancers, actions, devToolsOptions) {
     /* eslint-disable no-underscore-dangle */
     const composeEnhancers =
-        typeof window === 'object' && window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] ? window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__']({}) : compose
+        typeof window === 'object' && window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] ? window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'](devToolsOptions || {}) : compose
     /* eslint-enable */
 
     if (typeof reducers === 'object') {

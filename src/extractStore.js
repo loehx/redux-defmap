@@ -6,7 +6,7 @@ import createStore from './store'
 
 require('babel-polyfill')
 
-export default function extractStore(defMapMap) {
+export default function extractStore(defMapMap, devToolsOptions) {
     let actions = {}
     const initialState = {}
     const reducers = {}
@@ -57,7 +57,8 @@ export default function extractStore(defMapMap) {
     const store = createStore(reducers,
         initialState,
         enhancers,
-        actions)
+        actions,
+        devToolsOptions)
 
     store.actions = actions
 

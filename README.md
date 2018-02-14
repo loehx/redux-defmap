@@ -384,7 +384,11 @@ Rejected example: (Please mention the new type: **TEST_ERROR**)
 
 * Build fixed
 
-## v1.0.12 (COMING SOON)
+## v1.0.12
+
+* Added [`devToolsOptions`](https://github.com/zalmoxisus/redux-devtools-extension/blob/master/docs/API/Arguments.md)-parameter to `extractStore`
+
+## IDEAS
 
 * Added `$cancel: [ '<ACTION_NAME>' ]` and `$onCancel: () => { ... }`
 * Added `$debounce: <milliseconds>` and `$debounceImmediate: <boolean|default:true>`
