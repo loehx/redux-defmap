@@ -1,4 +1,5 @@
 import { assert } from 'chai'
+import * as redux from 'redux'
 import { extractStore } from '../src'
 
 describe('extractStore', () => {
@@ -8,13 +9,16 @@ describe('extractStore', () => {
 function test() {
     describe('Store Extraction (simple)', () => {
         it('should extract actions', () => {
-            const store = extractStore({
+            const store = extractStore(redux, {
                 app: {
                     APP_START: {
-                        test: a => ({ i: 0 })
+                        $actions: {
+                            test: a => ({ i: 0 })
+                        }
                     }
                 }
             })
+
             assert.typeOf(store.actions, 'object')
             assert.typeOf(store.subscribe, 'function')
             assert.typeOf(store.actions.test, 'function')
@@ -29,7 +33,7 @@ function test() {
                         return a
                     }
                 }
-                extractStore({
+                extractStore(redux, {
                     app: {}
                 })
                 assert.ok(ran)
@@ -37,13 +41,15 @@ function test() {
         }
 
         it('should create initial state', () => {
-            const store = extractStore({
+            const store = extractStore(redux, {
                 app: {
                     $state: {
                         count: -1
                     },
                     APP_START: {
-                        test: a => ({})
+                        $actions: {
+                            test: a => ({})
+                        }
                     }
                 }
             })
@@ -53,7 +59,7 @@ function test() {
 
         it('should create store with special enhancer', () => {
             let enhancerLoaded = false
-            extractStore({
+            extractStore(redux, {
                 app: {
                     $enhancer: (next) => {
                         return (...args) => {
@@ -69,57 +75,38 @@ function test() {
 
         it('should throw error if state key is missing', () => {
             assert.throws(() => {
-                extractStore({
+                extractStore(redux, {
                     $state: {
                         count: -1
                     },
                     TEST: {
-                        func: () => null
+                        $actions: {
+                            func: () => null
+                        }
                     }
                 })
             })
         })
 
-        it('should create sub state', () => {
-            const store = extractStore({
-                app: {
-                    $state: {},
-                    APP_START: {
-                        $stateKey: 'subState',
-                        test: (n) => n,
-                        $before: (actions, state, payload) => {
-                            state
-                        },
-                        $reduce: (state, n) => ({
-                            ...state,
-                            n
-                        })
-                    }
-                }
-            })
-            store.actions.test(1)
-            assert.equal(store.getState().app.n, 1)
-        })
-
         it('should call middleware', () => {
-            const store = extractStore({
+            const store = extractStore(redux, {
                 app: {
                     $state: {
                         count: -1
                     },
 
                     APP_START: {
-                        test: a => ({ count: 0 }),
-
-                        $before: (actions, state, payload) => {
-                            payload.count++
+                        $actions: {
+                            test: a => ({ count: 0 })
                         },
 
-                        $after: (actions, state, payload) => {
-                            payload.count++
+                        $middleware: (store, next, action) => {
+                            assert.ok(store.actions.test)
+                            action.payload.count += 1
+                            next(action)
                         },
 
-                        $reduce: (state, payload) => ({
+                        $reducer: (state, payload) => ({
                             ...state,
                             count: payload.count
                         })
@@ -127,9 +114,8 @@ function test() {
                 }
             })
 
-            const action = store.actions.test()
-            assert.equal(store.getState().app.count, 1) // $before modified the payload again
-            assert.equal(action.payload.count, 2) // $after modified the payload again
+            store.actions.test()
+            assert.equal(store.getState().app.count, 1)
         })
 
         it('should call extra reducer', () => {
@@ -143,12 +129,13 @@ function test() {
                 return state || {}
             }
 
-            const store = extractStore({
+            const store = extractStore(redux, {
                 app: {
                     TEST: {
-                        test: a => ({ count: 0 }),
-
-                        $reduce: (state, payload) => ({
+                        $actions: {
+                            test: a => ({ count: 0 })
+                        },
+                        $reducer: (state, payload) => ({
                             ...state,
                             count: payload.count
                         })
@@ -173,12 +160,13 @@ function test() {
                 }
             }
 
-            const store = extractStore({
+            const store = extractStore(redux, {
                 app: {
                     TEST: {
-                        test: a => ({ count: 0 }),
-
-                        $reduce: (state, payload) => ({
+                        $actions: {
+                            test: a => ({ count: 0 })
+                        },
+                        $reducer: (state, payload) => ({
                             ...state,
                             count: payload.count
                         })
@@ -195,10 +183,12 @@ function test() {
 
         it('should apply extra middlewares', () => {
             let count = 0
-            const store = extractStore({
+            const store = extractStore(redux, {
                 app: {
                     APP_START: {
-                        test: a => ({ i: 0 })
+                        $actions: {
+                            test: a => ({ i: 0 })
+                        }
                     }
                 },
                 middleware1: {

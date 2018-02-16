@@ -11,9 +11,7 @@ _"FIGHT COMPLEXITY!" - Jedi Cat_
 - Actions, reducers and middleware in one file
 - Action consts defined only once
 - Clear structure
-- Payload validation
 - Automatically connects to [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
-- Async actions
 
 ## Installation
 
@@ -29,15 +27,12 @@ npm install --save redux-jedi
 
         $state: { ... },
 
-        ACTION_NAME: {
-            actionCreator: (...) => ({ ... }),
-
-            $middleware: (state, next, action) => { ... },
-            $before: (actions, state, payload) => { ... },
-            $validation: { ... },
-            $reduce: (state, payload) => ({ ...state, ... }),
-            $after: (actions, state, payload) => { ... },
-            $meta: { ... }
+        ACTION_TYPE: {
+            $actions: {
+                actionCreator: (...) => ({ ... }), 
+            },
+            $middleware: (store, next, action) => { ... },
+            $reducer: (state, payload) => ({ ...state, ... }),
         },
         ...
     }
@@ -45,358 +40,110 @@ npm install --save redux-jedi
 }
 ```
 
-### Example: [REDUX](https://github.com/reactjs/redux/tree/master/examples/todos) vs [REDUX-JEDI](https://github.com/loehx/redux-jedi/tree/master/examples/todos)
+### Jedi Object
 
-This example shows the redux integration using `default redux` vs `redux-jedi`.
-
-`/examples/todos/src/actions/todos.js`
+Let's call this a `jediObject`
 
 ```javascript
-let nextTodoId = 0;
+{
+    todos: {
 
-export default {
+        $state: [],
 
-    $state: [],
-
-    ADD_TODO: {
-
-        addTodo: (text) => ({
-            id: nextTodoId++,
-            text
-        }),
-
-        $validation: {
-            text: t => typeof t === 'string' && t.length
+        ADD_TODO: {
+            $actions: {
+                addTodo: (text) => ({
+                    id: new Date().getTime(),
+                    text
+                }),
+            },
+            $middleware: (store, next, action) => {
+                if (!action.payload.text) {
+                    store.actions.showAlert('Please enter a text first.');
+                } else {
+                    next(actions);
+                    store.actions.showSuccess('Todo added successfully.');
+                }
+            },
+            $reducer: (state, payload) => [...state, payload],
         },
 
-        $reduce: (state, payload) => ([
-            ...state,
-            {
-                id: payload.id,
-                text: payload.text,
-                completed: false
-            }
-        ])
-    },
-
-    TOGGLE_TODO: {
-
-        toggleTodo: (id) => ({
-            id
-        }),
-
-        $before: (actions, state, payload) => {
-            // Do stuff before reducing ...
-            // e.g. call another action
+        REMOVE_TODO: {
+            $actions: {
+                removeTodo: (id) => ({ id }),
+            },
+            $middleware: (store, next, action) => {
+                const countBefore = store.getState().todos.length;
+                next(action);
+                if (countBefore === store.getState().todos.length) {
+                    store.actions.showAlert('Todo could not be found by ID: ' + action.payload.id);
+                } else {
+                    store.actions.showSuccess('Todo has been removed successfully.');
+                }
+            },
+            $reducer: (state, { id }) => state.filter(t => t.id !== id),
         },
-
-        $reduce: (state, payload) => state.map(todo =>
-            (todo.id === payload.id) ? { ...todo, completed: !todo.completed } : todo
-        ),
-
-        $after: (actions, state, payload) => {
-            // Do stuff after reducing ...
-            // e.g. call another action
-        }
     }
+    ...
 }
+```
+
+# Setup
+
+```js
+import * as redux from 'redux';
+import { initializeCurrentLocation } from 'redux-little-router';
+import { extractStore } from 'redux-jedi';
+import { enhancer as routerEnhancer, reducer as routerReducer, middleware as routerMiddleware } from './router';
+
+import app from './actions/app';
+import account from './actions/account';
+import $fetch from './middleware/$fetch';
+
+const store = extractStore(redux, {
+    router: {
+        $reducer: routerReducer,
+        $enhancer: routerEnhancer,
+        $middleware: routerMiddleware
+    },
+    fetch: {
+        $middleware: $fetch
+    },
+    app: app,
+    account: account
+}, {
+    predicate: (state, action) => !action.hide
+});
 ```
 
 ## extractStore
 
-Create your store jedi-like.
+`extractStore(redux*: Redux, jediObject*: Object, devToolsOptions: Object)`
 
-```javascript
-const store = extractStore({
+* `redux` All exports from redux (`import * as redux from 'redux';`)
+* `jediObject` Actions, reducers and middlewares bundled in a single object 
+* `devToolsOptions` [Click here for more information](https://github.com/zalmoxisus/redux-devtools-extension/blob/master/docs/API/Arguments.md)
 
-    // state key: app
-    app: {
-        // feature #1: Initial State
-        $state: {
-            count: 0
-        }
 
-        TEST: {
-            test: a => ({ count: 1 }),
-
-            $before: ...,
-            $after: ...,
-
-            $reduce: (state, payload) => ({
-                ...state,
-                count: payload.count
-            })
-        }
-    },
-    extra: {
-        $state: { test: 1 },
-
-        // feature #2: Extra Middleware
-        $middleware: someMiddleware, // store => next => action => { ... }
-
-        // feature #3: Extra Reducer
-        $reducer: someReducer, // (state, action) => { ... }
-
-        // feature #4: Extra Enhancer
-        $enhancer: someReducer, // (createStore) => (...args) => createStore(...args)
-    }
-})
-```
-
-State before calling `store.actions.test()`
-
-```
-{
-    app: {
-        count: 0
-    },
-    extra: {
-        test: 1
-    }
-}
-```
-
-State after calling `store.actions.test()`
-
-```
-{
-    app: {
-        count: 1
-    },
-    extra: {
-        test: 1
-    }
-}
-```
-
-## extractActions
-
-`extractActions(defmap: ActionDefinitionMap, dispatch: Function)`
-
-- `defmap*` ActionDefinitionMap
-- `dispatch` Function to receive the actions (e.g. store.dispatch) OPTIONAL
-
-```javascript
-// ActionDefinitionMap
-{
-    ACTION_NAME: {
-        actionCreator1: (arg) => arg, // actionCreator2('hello') => { type: 'ACTION_NAME', payload: 'hello' },
-        actionCreator2: (arg) => ({ arg }), // actionCreator2('hello') => { type: 'ACTION_NAME', payload: { arg: 'hello' } },
-        actionCreator3: (arg1, arg2) => arg1 + arg2, // actionCreator3(1, 1) => { type: 'ACTION_NAME', payload: 2 },
-        actionCreator4: () => null, // dispatches { type: 'ACTION_NAME' },
-        actionCreator5: () => undefined, // dispatches NOTHING,
-
-        // OPTIONAL meta information
-        // { type: 'ACTION_NAME', payload: { ... }, meta: { someProperty: 'ANY' } },
-        $meta: {
-            someProperty: 'ANY'
-        }
-    }
-}
-```
-
-`actions/app.js`
-
-```javascript
-export default {
-    LOADING: {
-        setLoading: (on) => ({
-            show: on
-        }),
-        showLoading: () => ({
-            show: true
-        }),
-        hideLoading: () => ({
-            show: false
-        })
-        /* Add more functions here ... */
-    },
-}
-```
-
-`actions/index.js`
-
-```javascript
-import { extractActions } from 'redux-jedi';
-
-import store from './store';
-import app from './app';
-
-export default extractActions(app, store.dispatch); // dispatch actions to store OPTIONAL
-```
-
-`some_file.js`
-
-```javascript
-import actions from './actions';
-
-actions.showLoading(); // dispatches AND returns { type: 'LOADING', payload: { show: true } }
-```
-
-## extractReducer
-
-`extractReducer(defmap: ReducerDefinitionMap)`
-
-- `defmap*` ReducerDefinitionMap
-
-```javascript
-// ReducerDefinitionMap
-{
-    ACTION_NAME: {
-
-        $reduce: (store, payload) => ({
-            ...store
-            // ...
-        })
-
-        // Payload validation (simple) OPTIONAL
-        $validation: p => typeof p === 'string'
-        // OK: { type: 'ACTION_NAME', payload: 'Hello World' }
-        // OK: { type: 'ACTION_NAME', payload: '' }
-        // BAD: { type: 'ACTION_NAME', payload: 12 }
-        // BAD: { type: 'ACTION_NAME' }
-
-        // Payload validation (complex) OPTIONAL
-        $validation: {
-            prop: p => typeof p === 'string'
-        }
-        // OK: { type: 'ACTION_NAME', payload: { prop: 'Hello World' } }
-        // OK: { type: 'ACTION_NAME', payload: { prop: '' } }
-        // BAD: { type: 'ACTION_NAME', payload: { prop: 12 } }
-        // BAD: { type: 'ACTION_NAME', payload: null }
-        // BAD: { type: 'ACTION_NAME' }
-    }
-}
-```
-
-## extractMiddleware
-
-`extractMiddleware(defmap: MiddlewareDefinitionMap, context: any, stateKey: string)`
-
-- `defmap*` MiddlewareDefinitionMap
-- `context` Any kind of value that gets simply passed to the events $before and $after (You should put in the actions here)
-- `stateKey` String that defines a partial state (e.g. 'app', 'router', ... | influences the 'state' variable in the event callbacks $before and $after)
-
-```javascript
-// MiddlewareDefinitionMap
-{
-    ACTION_NAME: {
-
-        // Before reducing OPTIONAL
-        $before: (context, state, payload) => {
-            // Do something
-        }
-
-        // After reducing OPTIONAL
-        $after: (context, state, payload) => {
-            // Do something (e.g. call other actions)
-        }
-
-    }
-}
-```
-
-## Async
-
-Actions created with `extractStore` have a promise-resolving middleware.
-
-```js
-const store = extractStore({
-  app: {
-    TEST: {
-
-      test: arg1 => new Promise((resolve, reject) => {
-        if (typeof arg1 !== 'number') {
-          return reject('Parameter arg1 should be a function.');
-        }
-        setTimeout(() => resolve(arg1), 1000) // delay 1 sec
-      }),
-
-      $before: (actions, state, payload) => {
-        assert.typeOf(payload.then, 'function') // Still a promise at this point
-      },
-
-      $reduce: (state, payload) => {
-        assert.equal(payload, 1337)
-        return {
-          ...state,
-          test: payload
-        }
-      }
-
-    }
-  }
-})
-```
-Resolved example:
-
-```javascript
-> store.actions.test(1337)
-{
-  type: "TEST",
-  payload: [Promise]
-}
-
-// After async middleware:
-{
-  type: "TEST",
-  payload: 1337
-}
-```
-
-Rejected example: (Please mention the new type: **TEST_ERROR**)
-
-```javascript
-> store.actions.test("1337")
-
-// After async middleware:
-{
-  type: "TEST_ERROR",
-  payload: "Parameter arg1 should be a function."
-}
-```
 
 # Change Log
 
-## v1.0.7
+## v2.0.0
 
-* Added `$middleware` keyword to provide async actions
-* Improve code coverage
-
-## v1.0.8
-
-* Added auto connect to [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
-* Removed `createStore` (Please use `extractStore` instead)
-* Removed `$stateKey` (which was not documented)
-* Improve code coverage
-
-## v1.0.9
-
-* Added extractStore feature #4: `$enhancer`
-* Bug fixing (redux-dev-tools)
-
-## v1.0.10
-
-* Removed `compose`, `connect`, `applyMiddleware` and `combineReducers`
-* Added async middleware
-
-## v1.0.11
-
-* Build fixed
-
-## v1.0.12
-
-* Added [`devToolsOptions`](https://github.com/zalmoxisus/redux-devtools-extension/blob/master/docs/API/Arguments.md)-parameter to `extractStore`
-
-## IDEAS
-
-* Added `$cancel: [ '<ACTION_NAME>' ]` and `$onCancel: () => { ... }`
-* Added `$debounce: <milliseconds>` and `$debounceImmediate: <boolean|default:true>`
-* Added `$waitFor: [ '<ACTION_NAME>' ]`
+* Simplified structure
+  * `stateKey` - _Topic_
+    * `$state: any` - initial state object
+    * `$middleware: function` - custom middleware (directly passed to redux)
+    * `$reducer: function` - custom reducer (directly passed to redux; IF THIS IS SET: There should be no other $reducer methods in this particular _topic_)
+    * `$enhancer: function` - custom enhancer (directly passed to redux)
+    * `ACTION_TYPE: string` - type name
+      * `$actions: object` - action creators (multiple)
+      * `$middleware: function` - redux-like middleware
+      * `$reducer: function`
 
 # License
 
-MIT © 2017 Alexander Löhn
+MIT © 2018 Alexander Löhn
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

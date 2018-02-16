@@ -1,64 +1,42 @@
-import { applyMiddleware } from 'redux'
-import extractActions from './extractActions'
-import extractMiddleware from './extractMiddleware'
-import extractReducer from './extractReducer'
-import createStore from './store'
+import extract from './extract'
 
-require('babel-polyfill')
-
-export default function extractStore(defMapMap, devToolsOptions) {
-    let actions = {}
+export default (redux, specMap, devToolsOptions) => {
+    const { createStore, combineReducers, applyMiddleware, compose } = redux
     const initialState = {}
+    const actions = {}
     const reducers = {}
     const middlewares = []
     const enhancers = []
+    let store = null
 
-    for (let stateKey in defMapMap) {
-        const defmap = defMapMap[stateKey]
+    for (let name in specMap) {
+        const spec = specMap[name]
 
-        if (typeof defmap !== 'object' || stateKey.toUpperCase() === stateKey) {
-            throw Error('[REDUX-JEDI] Every definition map needs to be wrapped in a state key.')
+        if (typeof spec !== 'object' || name.toUpperCase() === name) {
+            throw Error('[REDUX-JEDI] Every specification needs to be wrapped in a state key.')
         }
 
-        if (defmap.hasOwnProperty('$state')) {
-            initialState[stateKey] = defmap.$state
-            delete defmap['$state']
-        }
-
-        if (defmap.hasOwnProperty('$reducer')) {
-            reducers[stateKey] = defmap.$reducer
-            delete defmap['$reducer']
-        } else {
-            const r = extractReducer(defmap, stateKey)
-            reducers[stateKey] = r
-        }
-
-        if (defmap.$enhancer) {
-            enhancers.push(defmap.$enhancer)
-            delete defmap['$enhancer']
-        }
-
-        if (defmap.$middleware) {
-            middlewares.push(defmap.$middleware)
-            delete defmap['$middleware']
-        } else {
-            const m = extractMiddleware(defmap, actions)
-            if (m) {
-                middlewares.push(m)
-            }
-        }
-
-        const a = extractActions(defmap)
-        Object.assign(actions, a)
+        extract(name,
+            spec,
+            actions,
+            middlewares,
+            reducers,
+            enhancers,
+            initialState,
+            (action) => store.dispatch(action))
     }
 
     enhancers.push(applyMiddleware(...middlewares))
 
-    const store = createStore(reducers,
+    /* eslint-disable no-underscore-dangle */
+    const composeEnhancers =
+        typeof window === 'object' && window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] ? window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'](devToolsOptions || {}) : compose
+    /* eslint-enable */
+
+    store = createStore(
+        combineReducers(reducers),
         initialState,
-        enhancers,
-        actions,
-        devToolsOptions)
+        composeEnhancers(...enhancers))
 
     store.actions = actions
 
