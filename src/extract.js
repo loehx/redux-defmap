@@ -1,6 +1,6 @@
 export default (name, spec, actionMap, middlewares, reducerMap, enhancers, initialState, dispatch) => {
 
-    if (spec.$state) {
+    if (spec.hasOwnProperty('$state')) {
         initialState[name] = spec.$state
     }
 
@@ -39,6 +39,10 @@ export default (name, spec, actionMap, middlewares, reducerMap, enhancers, initi
     reducerMap[name] = spec.$reducer || ((state = {}, action) => {
         const { type, payload } = action
         const d = spec[type]
+
+        if (type === '@@RESET') {
+            return spec.hasOwnProperty('$state') ? spec.$state : {}
+        }
 
         if (!d || !d.$reducer) {
             return state

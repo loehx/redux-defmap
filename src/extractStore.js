@@ -39,6 +39,7 @@ export default (redux, specMap, devToolsOptions) => {
         composeEnhancers(...enhancers))
 
     store.actions = actions
+    store.reset = () => store.dispatch({ type: '@@RESET' })
 
     return store
 }

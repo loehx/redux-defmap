@@ -208,5 +208,25 @@ function test() {
             store.actions.test()
             assert.equal(2, count)
         })
+
+        it('should reset the state', () => {
+            const store = extractStore(redux, {
+                app: {
+                    $state: 0,
+                    INCREMENT: {
+                        $actions: {
+                            increment: () => null
+                        },
+                        $reducer: (count) => count + 1
+                    }
+                }
+            })
+
+            assert.equal(store.getState().app, 0)
+            store.actions.increment()
+            assert.equal(store.getState().app, 1)
+            store.reset()
+            assert.equal(store.getState().app, 0)
+        })
     })
 }

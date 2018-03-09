@@ -29,7 +29,7 @@ npm install --save redux-jedi
 
         ACTION_TYPE: {
             $actions: {
-                actionCreator: (...) => ({ ... }), 
+                actionCreator: (...) => ({ ... }),
             },
             $middleware: (store, next, action) => { ... },
             $reducer: (state, payload) => ({ ...state, ... }),
@@ -40,9 +40,9 @@ npm install --save redux-jedi
 }
 ```
 
-### Jedi Object
+### Usage
 
-Let's call this a `jediObject`
+Let's call this a `jediSpec`
 
 ```javascript
 {
@@ -118,15 +118,17 @@ const store = extractStore(redux, {
 
 ## extractStore
 
-`extractStore(redux*: Redux, jediObject*: Object, devToolsOptions: Object)`
+`extractStore(redux*: Redux, jediSpec*: Object, devToolsOptions: Object)`
 
 * `redux` All exports from redux (`import * as redux from 'redux';`)
-* `jediObject` Actions, reducers and middlewares bundled in a single object 
+* `jediSpec` Actions, reducers and middlewares bundled in a single object
 * `devToolsOptions` [Click here for more information](https://github.com/zalmoxisus/redux-devtools-extension/blob/master/docs/API/Arguments.md)
 
-
-
 # Change Log
+
+## v2.1.0
+
+* Added `store.reset()`
 
 ## v2.0.0
 
