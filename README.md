@@ -61,7 +61,7 @@ Let's call this a `jediSpec`
                 if (!action.payload.text) {
                     store.actions.showAlert('Please enter a text first.');
                 } else {
-                    next(actions);
+                    next(action);
                     store.actions.showSuccess('Todo added successfully.');
                 }
             },
